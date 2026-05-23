@@ -28,7 +28,8 @@ export function PatrimonioChart() {
 
   // Agrupar transações por ativo para calcular posição
   const posicoesPorAtivo = transacoes.reduce((acc, transacao) => {
-    const codigo = transacao.ativoFinanceiro?.codigo || 'N/A'
+    // CORREÇÃO: Lendo o nome exato do DTO do Java
+    const codigo = transacao.codigoAtivo || 'N/A'
     if (!acc[codigo]) {
       acc[codigo] = { quantidade: 0, valorTotal: 0 }
     }

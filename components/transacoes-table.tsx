@@ -30,16 +30,6 @@ function formatCurrency(value: number): string {
   }).format(value)
 }
 
-function formatDate(dateString: string): string {
-  return new Date(dateString).toLocaleDateString('pt-BR', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit',
-  })
-}
-
 export function TransacoesTable() {
   const { transacoes, carteiraAtiva, isLoading } = useInvestimentosStore()
   const [searchTerm, setSearchTerm] = useState('')
@@ -47,8 +37,9 @@ export function TransacoesTable() {
 
   // Filtrar transações
   const transacoesFiltradas = transacoes.filter((transacao) => {
+    // CORREÇÃO: Lendo 'codigoAtivo'
     const matchSearch =
-      transacao.ativoFinanceiro?.codigo
+      transacao.codigoAtivo
         ?.toLowerCase()
         .includes(searchTerm.toLowerCase()) ?? false
     const matchTipo = filterTipo === 'TODOS' || transacao.tipoOperacao === filterTipo
@@ -107,7 +98,6 @@ export function TransacoesTable() {
                 <TableHead className="text-right">Quantidade</TableHead>
                 <TableHead className="text-right">Preço Unit.</TableHead>
                 <TableHead className="text-right">Total</TableHead>
-                <TableHead className="text-right">Data</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -119,7 +109,6 @@ export function TransacoesTable() {
                     <TableCell><Skeleton className="h-6 w-12" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-20" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-32" /></TableCell>
                   </TableRow>
                 ))
               ) : transacoesFiltradas.length > 0 ? (
@@ -145,7 +134,7 @@ export function TransacoesTable() {
                       )}
                     </TableCell>
                     <TableCell className="font-medium">
-                      {transacao.ativoFinanceiro?.codigo || 'N/A'}
+                      {transacao.codigoAtivo || 'N/A'}
                     </TableCell>
                     <TableCell className="text-right">
                       {transacao.quantidade}
@@ -156,14 +145,11 @@ export function TransacoesTable() {
                     <TableCell className="text-right font-medium">
                       {formatCurrency(transacao.quantidade * transacao.precoOperacao)}
                     </TableCell>
-                    <TableCell className="text-right text-muted-foreground">
-                      {formatDate(transacao.dataOperacao)}
-                    </TableCell>
                   </TableRow>
                 ))
               ) : (
                 <TableRow>
-                  <TableCell colSpan={6} className="h-24 text-center">
+                  <TableCell colSpan={5} className="h-24 text-center">
                     Nenhuma transação encontrada.
                   </TableCell>
                 </TableRow>

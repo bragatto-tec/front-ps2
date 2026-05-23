@@ -13,10 +13,10 @@ export interface Carteira {
 }
 
 export interface CarteiraResumo {
-  valorInvestido: number
-  saldoAtual: number
-  rentabilidade: number
-  rentabilidadePercentual: number
+  nomeCarteira: string;
+  nomeInvestidor: string;
+  valorTotalInvestido: number;
+  valorTotalAtual: number;
 }
 
 export interface AtivoFinanceiro {
@@ -27,14 +27,13 @@ export interface AtivoFinanceiro {
 }
 
 export interface Transacao {
-  id: number
-  carteiraId: number
-  ativoFinanceiroId: number
-  ativoFinanceiro?: AtivoFinanceiro
-  quantidade: number
-  precoOperacao: number
-  tipoOperacao: 'COMPRA' | 'VENDA'
-  dataOperacao: string
+  id: number;
+  nomeCarteira: string;
+  codigoAtivo: string;
+  quantidade: number;
+  precoOperacao: number;
+  tipoOperacao: 'COMPRA' | 'VENDA';
+  dataOperacao?: string;
 }
 
 export interface AtivoCarteira {
