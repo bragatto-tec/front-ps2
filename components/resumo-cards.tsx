@@ -1,60 +1,65 @@
-'use client'
+"use client";
 
-import { DollarSign } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
-import { useInvestimentosStore } from '@/lib/store'
+import { DollarSign, TrendingUp, TrendingDown } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useInvestimentosStore } from "@/lib/store";
 
 function formatCurrency(value: number): string {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value)
+  return new Intl.NumberFormat("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  }).format(value);
 }
 
 export function ResumoCards() {
-  const { resumoCarteira, carteiraAtiva, isLoading } = useInvestimentosStore()
+  const { resumoCarteira, carteiraAtiva } = useInvestimentosStore();
+  if (!carteiraAtiva || !resumoCarteira) return null;
 
-  if (!carteiraAtiva) {
-    return null
-  }
-
-  // Mostra apenas 1 skeleton loader enquanto carrega
-  if (isLoading) {
-    return (
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <Skeleton className="h-4 w-24" />
-            <Skeleton className="h-4 w-4" />
-          </CardHeader>
-          <CardContent>
-            <Skeleton className="h-8 w-32 mb-2" />
-            <Skeleton className="h-3 w-28" />
-          </CardContent>
-        </Card>
-      </div>
-    )
-  }
-
-  // Pegamos apenas o Valor Investido do DTO do Java
-  const valorInvestido = resumoCarteira?.valorTotalInvestido ?? 0;
+  const valorInvestido = resumoCarteira.valorTotalInvestido;
+  const valorAtual = resumoCarteira.valorTotalAtual;
+  const lucro = valorAtual - valorInvestido; // AQUI ESTÁ O SEU LUCRO!
+  const isLucro = lucro >= 0;
 
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      {/* Valor Investido */}
+    <div className="grid gap-4 md:grid-cols-3">
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Valor Investido</CardTitle>
-          <DollarSign className="h-4 w-4 text-muted-foreground" />
+        <CardHeader>
+          <CardTitle className="text-sm">Valor Investido</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">
             {formatCurrency(valorInvestido)}
           </div>
-          <p className="text-xs text-muted-foreground">Total aplicado na carteira</p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-sm">Valor de Mercado (API)</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{formatCurrency(valorAtual)}</div>
+        </CardContent>
+      </Card>
+
+      {/* ESTE É O CARD DA PROVA REAL */}
+      <Card className={isLucro ? "border-emerald-500" : "border-red-500"}>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm">Lucro / Prejuízo</CardTitle>
+          {isLucro ? (
+            <TrendingUp className="text-emerald-500" />
+          ) : (
+            <TrendingDown className="text-red-500" />
+          )}
+        </CardHeader>
+        <CardContent>
+          <div
+            className={`text-2xl font-bold ${isLucro ? "text-emerald-500" : "text-red-500"}`}
+          >
+            {formatCurrency(lucro)}
+          </div>
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
